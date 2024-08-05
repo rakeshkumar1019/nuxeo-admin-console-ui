@@ -1,4 +1,4 @@
-name: Code Freeze
+name: Code Freeze test
 
 on:
   workflow_dispatch:
