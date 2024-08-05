@@ -1,4 +1,4 @@
-name: Code Freeze test 
+name: Code Freeze 
 on:
   workflow_dispatch:
     inputs:
