@@ -2,6 +2,12 @@ name: Code Freeze test one
 
 on:
   workflow_dispatch:
+    inputs:
+      rc:
+        description: 'Release Candidate version'
+        required: true
+        default: 'latest'
+        type: string
 
 jobs:
   create-pull-request:
@@ -22,5 +28,6 @@ jobs:
       - name: Create Pull Request
         id: create_pr
         run: |
-          gh pr create --base main --head dev --title "Release: Merge dev into main" --body "This PR merges changes from dev into main."
+          rc_version="${{ github.event.inputs.rc }}"
+          gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with RC=${rc_version}" --body "This PR merges changes from dev into main."
           
