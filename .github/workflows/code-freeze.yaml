@@ -1,4 +1,4 @@
-name: Code Freeze test one
+name: Code Freeze
 
 on:
   workflow_dispatch:
@@ -20,23 +20,6 @@ jobs:
 
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
 
-      - name: Fetch all branches
-        run: |
-          git fetch origin
-
-      - name: Create a new branch
-        run: |
-          new_branch="code-freeze-${{ github.event.inputs.rc }}"
-          git checkout -b $new_branch
-          git push origin $new_branch
-          echo "new_branch=$new_branch" >> $GITHUB_ENV
-
-      - name: Sync new branch with main
-        run: |
-          git checkout $new_branch
-          git pull origin main --rebase
-          git push origin $new_branch
-
       - name: Authenticate GitHub CLI
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
@@ -44,4 +27,4 @@ jobs:
       - name: Create Pull Request
         run: |
           rc_version="${{ github.event.inputs.rc }}"
-          gh pr create --base main --head $new_branch --title "Code Freeze: Merge $new_branch into main with RC=${rc_version}" --body "This PR merges changes from $new_branch into main."
+          gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with RC=${rc_version}" --body "This PR merges changes from dev into main."
