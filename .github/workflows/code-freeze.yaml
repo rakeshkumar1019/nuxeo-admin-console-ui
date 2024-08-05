@@ -10,14 +10,11 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
-        with:
-          ref: dev  
-          token: ${{ secrets.GIT_TOKEN }}
 
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
       
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GIT_TOKEN }}
           commit-message: "Release ${{ github.sha }}"
