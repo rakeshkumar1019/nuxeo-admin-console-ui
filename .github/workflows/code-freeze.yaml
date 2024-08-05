@@ -1,5 +1,4 @@
-name: Code Freeze test one
-
+name: Code Freeze exits
 on:
   workflow_dispatch:
     inputs:
