@@ -16,12 +16,6 @@ jobs:
 
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
       
-      - name: Fetch all branches
-        run: git fetch --all
-
-      - name: Checkout dev branch
-        run: git checkout dev
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
