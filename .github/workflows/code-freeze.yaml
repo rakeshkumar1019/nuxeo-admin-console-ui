@@ -10,15 +10,21 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
       
+      - name: Reset promotion branch
+        run: |
+          git fetch origin main
+          git reset --hard main
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GIT_TOKEN }}
           commit-message: "Release ${{ github.sha }}"
-          branch: dev
-          base: main
+          branch: dev-to-main
           title: "Release: Merge dev into main"
           body: "This PR merges changes from dev into main."
