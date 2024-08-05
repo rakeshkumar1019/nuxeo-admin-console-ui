@@ -1,4 +1,4 @@
-name: Code Freeze
+name: Code Freeze test
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ jobs:
       
       - name: Reset promotion branch
         run: |
-          git fetch origin main
+          git fetch origin main:main
           git reset --hard main
 
       - name: Create Pull Request
