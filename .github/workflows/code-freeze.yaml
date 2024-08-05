@@ -31,6 +31,3 @@ jobs:
           base: main
           title: "Release: Merge dev into main"
           body: "This PR merges changes from dev into main."
-
-      - name: Output Pull Request URL
-        run: echo "Pull request URL: ${{ steps.create_pr.outputs.pull-request-url }}"
