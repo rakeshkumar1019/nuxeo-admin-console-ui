@@ -20,12 +20,22 @@ jobs:
 
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
 
+      - name: Fetch all branches
+        run: |
+          git fetch origin
+
       - name: Create a new branch
         run: |
           new_branch="code-freeze-${{ github.event.inputs.rc }}"
           git checkout -b $new_branch
           git push origin $new_branch
           echo "new_branch=$new_branch" >> $GITHUB_ENV
+
+      - name: Sync new branch with main
+        run: |
+          git checkout $new_branch
+          git pull origin main --rebase
+          git push origin $new_branch
 
       - name: Authenticate GitHub CLI
         run: |
