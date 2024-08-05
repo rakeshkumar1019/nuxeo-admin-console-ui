@@ -1,4 +1,4 @@
-name: Code Freeze exits
+name: Code Freeze 
 on:
   workflow_dispatch:
     inputs:
