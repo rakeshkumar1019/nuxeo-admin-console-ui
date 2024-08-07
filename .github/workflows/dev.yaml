@@ -70,33 +70,26 @@ jobs:
 
       - name: Get Prerelease Version
         run: |
-              git fetch origin --tags
+          git fetch origin --tags
 
-              # List all -rc tags, clean the output to remove unwanted characters
-              echo "Fetching -rc tags..."
-              git tag --list "v*.*.*-rc.*" | grep -v '-beta.' | awk '{print $NF}' > all_rc_tags.txt
-              cat all_rc_tags.txt
+          # Get the latest -rc tag
+          RC_VERSION=$(git describe --tags --match 'v*.*.*-rc.*' --abbrev=0)
+          
+          echo "Latest -rc tag: ${RC_VERSION}"
 
-              # Filter out -beta tags and sort -rc tags
-              echo "Sorting and filtering -rc tags..."
-              RC_TAGS=$(sort -V all_rc_tags.txt)
-              echo "Sorted -rc tags:"
-              echo "$RC_TAGS"
+          # Ensure RC_VERSION is set
+          if [ -z "$RC_VERSION" ]; then
+            echo "No -rc tags found. Exiting..."
+            exit 1
+          fi
 
-              # Get the latest -rc tag
-              RC_VERSION=$(echo "$RC_TAGS" | tail -n 1)
-              echo "Latest -rc tag: ${RC_VERSION}"
+          # Use semver to calculate the next prerelease version
+          echo "Calculating next prerelease version..."
+          NEXT_VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION} | tr -d '\n')
+          echo "NEXT_VERSION=${NEXT_VERSION}"
 
-              # Debugging: Check the RC_VERSION variable
-              echo "RC_VERSION=${RC_VERSION}"
-
-              # Use semver to calculate the next prerelease version
-              echo "Calculating next prerelease version..."
-              NEXT_VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION} | tr -d '\n')
-              echo "NEXT_VERSION=${NEXT_VERSION}"
-
-              # Set the VERSION environment variable
-              echo "VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+          # Set the VERSION environment variable
+          echo "VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
       
       - name: Update Version ${{env.VERSION}}
         run: |
