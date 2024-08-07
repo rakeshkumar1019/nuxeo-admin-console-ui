@@ -93,7 +93,7 @@ jobs:
 
       - name: Promote Admin Console UI ${{ github.event.inputs.version }} to ${{ env.VERSION }}
         env:
-          PACKAGE: nuxeo-admin-console-${{ env.VERSION }} 
+          PACKAGE: nuxeo-admin-console-test-${{ env.VERSION }} 
           CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
         run: |
           PADDED=$(printf '%03d' $(echo ${{ github.event.inputs.version }} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-beta\.\([0-9]+\)/\\1/g))  
