@@ -28,10 +28,9 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Store Beta Release Version as a Secret
-        uses: actions/set-secret@v2
-        with:
-          secret_name: BETA_RELEASE_VERSION
-          secret_value: ${{ github.event.inputs.beta-release-version }}
+        run: |
+           gh secret set BETA_RELEASE_VERSION --body ${{ github.event.inputs.beta-release-version }}
+        
 
       - name: Create Pull Request
         run: |
