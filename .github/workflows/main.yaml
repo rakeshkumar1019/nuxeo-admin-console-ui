@@ -130,7 +130,7 @@ jobs:
         uses: skjolber/maven-cache-github-action@v1
         with:
           step: save
-          
+
       - name: Archive Package
         uses: actions/upload-artifact@v4
         with:
@@ -153,7 +153,7 @@ jobs:
           git add nuxeo-admin-console-web/angular-app/package-lock.json
           git commit -a -m "Release ${{env.VERSION}}"
           git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
-          git push fork v${{env.VERSION}}
+          git push  v${{env.VERSION}}
         
       # - name: Publish on Pre-Prod Marketplace
       #   working-directory: nuxeo-admin-console-package/target
