@@ -22,7 +22,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
-    needs: [lint, test]
+    needs: []
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -71,11 +71,11 @@ jobs:
       - name: Get Prerelease Version
         run: |
           git fetch origin --tags
-          RC_VERSION=$(git tag --sort=taggerdate --list "v${PACKAGE_VERSION/-SNAPSHOT}*" | tail -1 | tr -d '\n')
+          RC_VERSION=$(git tag --sort=taggerdate --list '*rc*' | tail -n 1 | tr -d '\n')
           echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" "${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
-          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION}  | tr -d '\n')" >> $GITHUB_ENV
+          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION} | tr -d '\n')" >> $GITHUB_ENV
       
-      - name: Update Version
+      - name: Update Version ${{env.VERSION}}
         run: |
           # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
           # set padded version to build package for connect preprod
@@ -95,15 +95,25 @@ jobs:
         working-directory: nuxeo-admin-console-web/angular-app
         run: npm install
 
+      - name: Restore Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: restore
+
       - name: Build Angular Project
         run: mvn package
+
+      - name: Save Maven cache
+        uses: skjolber/maven-cache-github-action@v1
+        with:
+          step: save
 
       - name: Archive Package
         uses: actions/upload-artifact@v4
         with:
           name: packages
           path: |
-            nuxeo-admin-console-package/target/nuxeo-admin-console-*.zip
+            nuxeo-admin-console-package/target/nuxeo-admin-console-test-*.zip
 
       - name: Delete & Update .npmrc 
         working-directory: nuxeo-admin-console-web/angular-app
@@ -122,27 +132,27 @@ jobs:
           git tag -a v${{env.VERSION}} -m "Release ${{env.VERSION}}"
           git push origin v${{env.VERSION}}
         
+      - name: Publish on Pre-Prod Marketplace
+        working-directory: nuxeo-admin-console-package/target
+        env:
+          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
+        run: |
+          PACKAGE="nuxeo-admin-console-test-${{env.PADDED_VERSION}}.zip"
+          STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
+          cat publish-req.output
+          if [[ "$STATUS_CODE" != "200" ]]
+          then
+            exit 1
+          else
+            exit 0
+          fi
+
       # - name: Publish on Pre-Prod Marketplace
       #   working-directory: nuxeo-admin-console-package/target
       #   env:
       #     CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
       #   run: |
       #     PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
-      #     STATUS_CODE=`curl -i --silent --output publish-req.output -w "%{http_code}" -u "${{ secrets.CONNECT_PREPROD_AUTH }}" -F package=@$PACKAGE "$CONNECT_PREPROD_URL/site/marketplace/upload?batch=true"`
-      #     cat publish-req.output
-      #     if [[ "$STATUS_CODE" != "200" ]]
-      #     then
-      #       exit 1
-      #     else
-      #       exit 0
-      #     fi
-
-      - name: Publish on Pre-Prod Marketplace
-        working-directory: nuxeo-admin-console-package/target
-        env:
-          CONNECT_PREPROD_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo
-        run: |
-          PACKAGE="nuxeo-admin-console-${{env.PADDED_VERSION}}.zip"
-          ls
-          echo "PACKAGE=$PACKAGE" >> $GITHUB_ENV
-          echo $PACKAGE
+      #     ls
+      #     echo "PACKAGE=$PACKAGE" >> $GITHUB_ENV
+      #     echo $PACKAGE
