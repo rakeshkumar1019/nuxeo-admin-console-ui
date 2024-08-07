@@ -69,36 +69,9 @@ jobs:
 
       - name: Get Prerelease Version
         run: |
-          git fetch --tags
-          latest_tag=$(git tag -l 'v*.*.*-rc.*' --sort=-v:refname | head -n 1)
-          
-          if [[ $latest_tag =~ ^v([0-9]+\.[0-9]+\.[0-9]+)-rc\.([0-9]+) ]]; then
-            base_version=${BASH_REMATCH[1]}
-            rc_version=${BASH_REMATCH[2]}
-            
-            # Fetch tags that match the base version and beta pattern
-            latest_beta_tag=$(git tag -l "${base_version}-beta.*" --sort=-v:refname | head -n 1)
+          echo "VERSION=${{ secrets.BETA_RELEASE_VERSION }}" >> $GITHUB_ENV
 
-            if [[ $latest_beta_tag =~ -beta\.([0-9]+) ]]; then
-              beta_version=${BASH_REMATCH[1]}
-              next_beta_version=$((beta_version + 1))
-            else
-              next_beta_version=0
-            fi
-            
-            # Create the new tag without leading 'v'
-            new_tag="${base_version}-beta.${next_beta_version}"
-            echo "new_tag=$new_tag"
-            echo "VERSION=$new_tag" >> $GITHUB_ENV
-            
-            echo "New prerelease tag: $new_tag"
-          else
-            echo "No rc tags found."
-            exit 1
-          fi
-
-      
-      - name: Update Version
+      - name: Update Version ${{env.VERSION}}
         run: |
           # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
           # set padded version to build package for connect preprod
