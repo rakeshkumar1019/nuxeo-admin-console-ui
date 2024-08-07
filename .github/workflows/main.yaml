@@ -86,7 +86,8 @@ jobs:
               next_beta_version=0
             fi
             
-            echo 'VERSION="${base_version}-beta.${next_beta_version}"' >> $GITHUB_ENV
+            new_tag="${base_version}-beta.${next_beta_version}"
+            echo "VERSION=$new_tag" >> $GITHUB_ENV
             
             echo "New prerelease tag: $VERSION"
           else
