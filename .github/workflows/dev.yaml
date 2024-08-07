@@ -71,25 +71,9 @@ jobs:
       - name: Get Prerelease Version
         run: |
           git fetch origin --tags
-
-          # Get the latest -rc tag
-          RC_VERSION=$(git describe --tags --match 'v*.*.*-rc.*' --abbrev=0)
-          
-          echo "Latest -rc tag: ${RC_VERSION}"
-
-          # Ensure RC_VERSION is set
-          if [ -z "$RC_VERSION" ]; then
-            echo "No -rc tags found. Exiting..."
-            exit 1
-          fi
-
-          # Use semver to calculate the next prerelease version
-          echo "Calculating next prerelease version..."
-          NEXT_VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION} | tr -d '\n')
-          echo "NEXT_VERSION=${NEXT_VERSION}"
-
-          # Set the VERSION environment variable
-          echo "VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+          RC_VERSION=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$' | head -n 1)
+          echo "v${PACKAGE_VERSION/-SNAPSHOT}*" "->" "${RC_VERSION}" "->" "${RC_VERSION:-$PACKAGE_VERSION}"
+          echo "VERSION=$(npx semver -i prerelease --preid rc ${RC_VERSION:-$PACKAGE_VERSION} | tr -d '\n')" >> $GITHUB_ENV
       
       - name: Update Version ${{env.VERSION}}
         run: |
