@@ -72,19 +72,19 @@ jobs:
         run: |
               git fetch origin --tags
 
-              # List all tags that match the -rc pattern
+              # List all -rc tags, clean the output to remove unwanted characters
               echo "Fetching -rc tags..."
-              git tag --list "v*.*.*-rc.*" > all_rc_tags.txt
+              git tag --list "v*.*.*-rc.*" | grep -v '-beta.' | awk '{print $NF}' > all_rc_tags.txt
               cat all_rc_tags.txt
 
               # Filter out -beta tags and sort -rc tags
-              echo "Filtering out -beta tags..."
-              RC_TAGS=$(grep -v '-beta.' all_rc_tags.txt)
-              echo "Filtered -rc tags:"
+              echo "Sorting and filtering -rc tags..."
+              RC_TAGS=$(sort -V all_rc_tags.txt)
+              echo "Sorted -rc tags:"
               echo "$RC_TAGS"
 
               # Get the latest -rc tag
-              RC_VERSION=$(echo "$RC_TAGS" | sort -V | tail -n 1)
+              RC_VERSION=$(echo "$RC_TAGS" | tail -n 1)
               echo "Latest -rc tag: ${RC_VERSION}"
 
               # Debugging: Check the RC_VERSION variable
