@@ -71,8 +71,8 @@ jobs:
         run: |
           git fetch --tags
           latest_tag=$(git tag -l 'v*.*.*-rc.*' --sort=-v:refname | head -n 1)
-         
-          if [[ $latest_tag =~ (v[0-9]+\.[0-9]+\.[0-9]+)-rc\.([0-9]+) ]]; then
+          
+          if [[ $latest_tag =~ ^v([0-9]+\.[0-9]+\.[0-9]+)-rc\.([0-9]+) ]]; then
             base_version=${BASH_REMATCH[1]}
             rc_version=${BASH_REMATCH[2]}
             
@@ -86,21 +86,24 @@ jobs:
               next_beta_version=0
             fi
             
+            # Create the new tag without leading 'v'
             new_tag="${base_version}-beta.${next_beta_version}"
+            echo "new_tag=$new_tag"
             echo "VERSION=$new_tag" >> $GITHUB_ENV
             
-            echo "New prerelease tag: $VERSION"
+            echo "New prerelease tag: $new_tag"
           else
             echo "No rc tags found."
             exit 1
           fi
+
       
       - name: Update Version
         run: |
           # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
           # set padded version to build package for connect preprod
-          PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-rc\.\([0-9]+\)/\\1/g))
-          PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-rc\.)[0-9]+/\\1$PADDED/g")
+          PADDED=$(printf '%03d' $(echo ${{env.VERSION}} | sed -r s/[0-9]+\.[0-9]+\.[0-9]+-beta\.\([0-9]+\)/\\1/g))
+          PADDED_VERSION=$(echo ${{env.VERSION}} | sed -E "s/([0-9]+\.[0-9]+\.[0-9]+-beta\.)[0-9]+/\\1$PADDED/g")
           echo "PADDED_VERSION=$PADDED_VERSION" >> $GITHUB_ENV
           find . -type f -not -path "./node_modules/*" -regex ".*\.\(xml\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"$PADDED_VERSION"'/g' {} \;
           sed -i -e 's/\${project.version}/'"$PADDED_VERSION"'/g' nuxeo-admin-console-package/pom.xml
