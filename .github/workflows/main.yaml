@@ -4,42 +4,25 @@ on:
   push:
     branches:
       - main
-      - dev
 
   # Manually trigger the workflow
   workflow_dispatch:
 
 jobs:
   lint:
-    if: github.ref == 'refs/heads/main'
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint-main.yaml@main
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@main
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-
-  lint-dev:
-    if: github.ref == 'refs/heads/dev'
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint-dev.yaml@dev
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   test:
-    if: github.ref == 'refs/heads/main'
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest-main.yaml@main
+    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest.yaml@main
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-
-  test-dev:
-    if: github.ref == 'refs/heads/dev'
-    uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/utest-dev.yaml@dev
-    secrets:
-      NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
-      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
-    needs: [lint, test, lint-dev, test-dev]
+    needs: []
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
