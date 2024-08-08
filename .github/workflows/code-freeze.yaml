@@ -7,14 +7,7 @@ on:
         required: true
         type: string
       beta-release-version:
-        description: |
-          Beta release version for the upcoming release (e.g., 23.0.0-beta.0).
-          
-          The version format includes:
-          - The upcoming release version (e.g., 23.0.0)
-          - An incremental beta identifier (e.g., -beta.0)
-          
-          The beta version increments based on the number of code freezes done for the upcoming release.
+        description: "Beta release version for the upcoming release (e.g., 23.0.0-beta.0). Format: <release-version>-beta.<beta-number>. The beta number increments with each code freeze."
         required: true
         type: string
 
