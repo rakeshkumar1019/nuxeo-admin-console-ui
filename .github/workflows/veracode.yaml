@@ -19,6 +19,16 @@ jobs:
         with:
           ref: dev
 
+      - name: Check branch
+        id: check-branch
+        run: echo "branch_name=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+
+      - name: Stop if not on dev branch
+        if: env.branch_name != 'dev'
+        run: |
+          echo "Not on dev branch, stopping job."
+          exit 1
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
