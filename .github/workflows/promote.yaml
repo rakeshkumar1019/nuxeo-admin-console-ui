@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to promote (e.g.: 23.0.1-beta.0)'
+        description: 'Version to promote (e.g.: 23.1.0)'
         required: true
       # referenceBranch:
       #   description: 'Branch to be updated after the promotion'
