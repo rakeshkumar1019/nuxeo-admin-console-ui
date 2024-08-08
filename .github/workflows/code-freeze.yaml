@@ -7,7 +7,14 @@ on:
         required: true
         type: string
       beta-release-version:
-        description: 'Beta Release version eg(23.0.0-beta.0)'
+        description: |
+          Beta release version for the upcoming release (e.g., 23.0.0-beta.0).
+          
+          The version format includes:
+          - The upcoming release version (e.g., 23.0.0)
+          - An incremental beta identifier (e.g., -beta.0)
+          
+          The beta version increments based on the number of code freezes done for the upcoming release.
         required: true
         type: string
 
@@ -35,4 +42,4 @@ jobs:
       - name: Create Pull Request
         run: |
           rc_version="${{ github.event.inputs.rc }}"
-          gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with RC=${rc_version}" --body "This PR merges changes from dev into main."
+          gh pr create --base main --head dev --title "Code Freeze: Merge 'dev' into 'main' with Release Candidate v${rc_version}" --body "This pull request merges the latest changes from the 'dev' branch into the 'main' branch.\n\nIt includes updates in preparation for the upcoming release.\n\nRelease Candidate: v${rc_version}. \n\n Create Beta Release: ${{ github.event.inputs.beta-release-version }}"

@@ -6,10 +6,10 @@ on:
       version:
         description: 'Version to promote (e.g.: 23.0.1-beta.0)'
         required: true
-      referenceBranch:
-        description: 'Branch to be updated after the promotion'
-        required: true
-        default: 'dev'
+      # referenceBranch:
+      #   description: 'Branch to be updated after the promotion'
+      #   required: true
+      #   default: 'dev'
       dryRun:
         description: 'Run the workflow without pushing code or publishing artifacts'
         type: boolean
@@ -150,13 +150,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GIT_TOKEN }}
-          ref: ${{ github.event.inputs.referenceBranch }}
+          ref: dev
 
       - name: New Version (Always Minor)
         run: echo "NEW_VERSION=$(npx semver -i patch $VERSION)" >> $GITHUB_ENV
 
 
-      - name: Align ${{ github.event.inputs.referenceBranch }} branch on next version ${{ env.NEW_VERSION }}-SNAPSHOT
+      - name: Align dev branch on next version ${{ env.NEW_VERSION }}-SNAPSHOT
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -175,4 +175,4 @@ jobs:
           git commit -a -m "Update $OLD_SNAPSHOT to $NEW_SNAPSHOT"
 
       - if: ${{ github.event.inputs.dryRun == 'false' }}
-        run: git push origin ${{ github.event.inputs.referenceBranch }}
+        run: git push origin dev
