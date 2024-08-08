@@ -38,4 +38,4 @@ jobs:
           gh pr create --base main --head dev --title "Code Freeze: Merge `dev` into `main` with Release Candidate v${rc_version}" --body "### This pull request merges the latest changes from the `dev` branch into the `main` branch.
           It includes updates in preparation for the upcoming release.
           **Release Candidate:** [v${rc_version}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${rc_version}).
-          **Create Beta Release:** [v${{ github.event.inputs.beta-release-version }}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${{ github.event.inputs.beta-release-version }}).
+          **Create Beta Release:** [v${{ github.event.inputs.beta-release-version }}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${{ github.event.inputs.beta-release-version }})."
