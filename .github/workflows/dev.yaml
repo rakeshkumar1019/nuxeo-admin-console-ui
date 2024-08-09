@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - dev
-  pull_request_target:
-    types:
-      - closed
-    branches:
-      - dev
 
   # Manually trigger the workflow
   workflow_dispatch:
@@ -26,35 +21,8 @@ jobs:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
-# Run only on push to dev branch without PR
-  Merged:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev' && !contains(github.event.head_commit.message, 'Merge pull request')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      
-#####################Expirement  Start with out PR #########################
-      - name: Get latest beta tag
-        run: |
-          git fetch  origin --tags
-          latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//')
-          echo "Latest beta tag: $latest_beta_tag"
-          echo "LATEST_BETA_TAG=$latest_beta_tag" >> $GITHUB_ENV
-
-      - name: Update beta version
-        run: |
-            # Increment beta.x to x+1 while preserving the correct format
-            BASE_VERSION=$(echo $LATEST_BETA_TAG | sed 's/-beta.*//')
-            BETA_NUMBER=$(echo $LATEST_BETA_TAG | sed 's/.*-beta.//')
-            NEW_BETA_NUMBER=$((BETA_NUMBER + 1))
-            NEW_BETA_TAG="${BASE_VERSION}-beta.${NEW_BETA_NUMBER}"
-            echo "New beta tag: $NEW_BETA_TAG"
-            echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
-#####################Expirement######################################################
-
   build:
-    needs: []
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
