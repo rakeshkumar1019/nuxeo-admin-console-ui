@@ -68,6 +68,17 @@ jobs:
           popd
 
 
+      - name: Determine merge source
+        run: |
+          git fetch --all
+          git checkout dev
+          git pull origin dev
+          MERGE_COMMIT=$(git log --merges -n 1 --pretty=format:"%H")
+          MERGE_SOURCE=$(git log -1 --merges --pretty=format:"%P" $MERGE_COMMIT | cut -d' ' -f2)
+          BRANCH_NAME=$(git name-rev --name-only $MERGE_SOURCE)
+          echo "Code was merged from branch: $BRANCH_NAME"
+          echo "MERGE_SOURCE_BRANCH=$BRANCH_NAME" >> $GITHUB_ENV
+
       - name: Get Prerelease Version
         run: |
           git fetch origin --tags
