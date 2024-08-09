@@ -67,7 +67,6 @@ jobs:
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
 
-
       - name: Get Prerelease Version
         run: |
           git fetch origin --tags
