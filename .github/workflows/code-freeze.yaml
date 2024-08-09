@@ -6,10 +6,10 @@ on:
         description: 'Release Candidate version eg(23.0.0-rc.1)'
         required: true
         type: string
-      beta-release-version:
-        description: "Beta release version for the upcoming release (e.g., 23.0.0-beta.0). Format: <release-version>-beta.<beta-number>. The beta number increments with each code freeze."
-        required: true
-        type: string
+      # beta-release-version:
+      #   description: "Beta release version for the upcoming release (e.g., 23.0.0-beta.0). Format: <release-version>-beta.<beta-number>. The beta number increments with each code freeze."
+      #   required: true
+      #   type: string
 
 jobs:
   create-pull-request:
@@ -27,15 +27,34 @@ jobs:
         run: |
           echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
 
-      - name: Store Beta Release Version as a Secret
+      - name: Get latest beta tag
         run: |
-           gh secret set BETA_RELEASE_VERSION --body ${{ github.event.inputs.beta-release-version }}
+          git fetch  origin --tags
+          latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep '^23\.[0-9]*\.[0-9]*-beta\.[0-9]*$' | head -n 1)
+          echo "Latest beta tag: $latest_beta_tag"
+          echo "LATEST_BETA_TAG=$latest_beta_tag" >> $GITHUB_ENV
+
+      - naem: Get Input & latest beta tag Base Version
+        run: |
+          INPUT_VERSION="${{ github.event.inputs.rc }}"
+          INPUT_BASE_VERSION=$(echo $INPUT_VERSION | sed -E 's/^(23\.[0-9]+\.[0-9]+).*/\1/')
+          echo "INPUT_BASE_VERSION=$INPUT_BASE_VERSION" >> $GITHUB_ENV
+
+          BETA_TAG_BASE_VERSION=$(echo $LATEST_BETA_TAG | sed -E 's/^(23\.[0-9]+\.[0-9]+).*/\1/')
+          echo "BETA_TAG_BASE_VERSION=$BETA_TAG_BASE_VERSION" >> $GITHUB_ENV
+
+          echo $INPUT_BASE_VERSION $BETA_TAG_BASE_VERSION
+
+
+      # - name: Store Beta Release Version as a Secret
+      #   run: |
+      #      gh secret set BETA_RELEASE_VERSION --body ${{ github.event.inputs.beta-release-version }}
         
 
-      - name: Create Pull Request
-        run: |
-          rc_version="${{ github.event.inputs.rc }}"
-          gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with Release Candidate v${rc_version}" --body "### This pull request merges the latest changes from the **dev** branch into the **main** branch.
-          It includes updates in preparation for the upcoming release.
-          **Release Candidate:** [v${rc_version}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${rc_version}).
-          **Create Beta Release:** [v${{ github.event.inputs.beta-release-version }}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${{ github.event.inputs.beta-release-version }})."
+      # - name: Create Pull Request
+      #   run: |
+      #     rc_version="${{ github.event.inputs.rc }}"
+      #     gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with Release Candidate v${rc_version}" --body "### This pull request merges the latest changes from the **dev** branch into the **main** branch.
+      #     It includes updates in preparation for the upcoming release.
+      #     **Release Candidate:** [v${rc_version}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${rc_version}).
+      #     **Create Beta Release:** [v${{ github.event.inputs.beta-release-version }}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${{ github.event.inputs.beta-release-version }})."
