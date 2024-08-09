@@ -27,7 +27,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   Merged:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
