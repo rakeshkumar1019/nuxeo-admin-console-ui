@@ -5,10 +5,10 @@ on:
     branches:
       - dev
   pull_request_target:
-  types:
-    - closed
-  branches:
-    - dev
+    types:
+      - closed
+    branches:
+      - dev
 
   # Manually trigger the workflow
   workflow_dispatch:
