@@ -30,7 +30,7 @@ jobs:
       - name: Get latest beta tag
         run: |
           git fetch  origin --tags
-          latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep '^23\.[0-9]*\.[0-9]*-beta\.[0-9]*$' | head -n 1)
+          latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1)
           echo "Latest beta tag: $latest_beta_tag"
           echo "LATEST_BETA_TAG=$latest_beta_tag" >> $GITHUB_ENV
 
