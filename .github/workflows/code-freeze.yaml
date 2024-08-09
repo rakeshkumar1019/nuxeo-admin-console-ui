@@ -48,8 +48,11 @@ jobs:
       - name: Update beta version
         run: |
           if [ "$INPUT_BASE_VERSION" = "$BETA_TAG_BASE_VERSION" ]; then
-            # Increment beta.x to x+1
-            NEW_BETA_TAG=$(echo $LATEST_BETA_TAG | awk -F'[.-]' '{OFS=FS; $NF++; print $0}')
+            # Increment beta.x to x+1 while preserving the correct format
+            BASE_VERSION=$(echo $LATEST_BETA_TAG | sed 's/-beta.*//')
+            BETA_NUMBER=$(echo $LATEST_BETA_TAG | sed 's/.*-beta.//')
+            NEW_BETA_NUMBER=$((BETA_NUMBER + 1))
+            NEW_BETA_TAG="${BASE_VERSION}-beta.${NEW_BETA_NUMBER}"
           else
             # Append -beta.0 to INPUT_BASE_VERSION
             NEW_BETA_TAG="${INPUT_BASE_VERSION}-beta.0"
