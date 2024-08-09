@@ -27,7 +27,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
 # Run only on push to main branch without PR
-  directly-merged:
+  hotfix-merge:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'Merge pull request')
     runs-on: ubuntu-latest
     steps:
@@ -66,8 +66,8 @@ jobs:
           gh pr create --base dev --head main --title "HF: Merge main into dev" --body "### This pull request merges the latest changes from the **main** branch into the **dev** branch."
 # Run only on push to main branch without PR
   build:
-    needs: [lint, test, directly-merged]
-    if: ${{ (github.event_name != 'push' || github.ref != 'refs/heads/main') || needs.directly-merged.result == 'success' }}
+    needs: [lint, test, hotfix-merge]
+    if: ${{ (github.event_name != 'push' || github.ref != 'refs/heads/main') || needs.hotfix-merge.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
