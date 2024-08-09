@@ -4,11 +4,18 @@ on:
   push:
     branches:
       - dev
+  pull_request_target:
+  types:
+    - closed
+  branches:
+    - dev
 
   # Manually trigger the workflow
   workflow_dispatch:
 
 jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
   lint:
     uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev
     secrets:
@@ -20,6 +27,38 @@ jobs:
     secrets:
       NPM_PACKAGES_TOKEN: ${{ secrets.NPM_PACKAGES_TOKEN }}
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
+
+  Merged:
+    if_merged:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+#####################Expirement  Start######################################################
+      - name: Determine merge source
+        needs: if_merged
+        run: |
+          git fetch --all
+          git checkout dev
+          git pull origin dev
+          MERGE_COMMIT=$(git log --merges -n 1 --pretty=format:"%H")
+          if [ -n "$MERGE_COMMIT" ]; then
+            MERGE_MSG=$(git log -1 --pretty=format:"%s" $MERGE_COMMIT)
+            echo "Last merge commit message: $MERGE_MSG"
+            if [[ $MERGE_MSG =~ Merge\ pull\ request\ #([0-9]+)\ from\ ([^/]+)/(.+) ]]; then
+              PR_NUMBER=${BASH_REMATCH[1]}
+              SOURCE_BRANCH=${BASH_REMATCH[3]}
+              echo "Merged from PR #$PR_NUMBER, source branch: $SOURCE_BRANCH"
+              echo "MERGE_SOURCE_BRANCH=$SOURCE_BRANCH" >> $GITHUB_ENV
+            else
+              echo "Couldn't extract PR number and branch from merge commit message"
+            fi
+          else
+            echo "No merge commits found in recent history"
+          fi
+
+#####################Expirement######################################################
 
   build:
     needs: []
@@ -67,30 +106,6 @@ jobs:
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
 
-#####################Expirement  Start######################################################
-      - name: Determine merge source
-        run: |
-          git fetch --all
-          git checkout dev
-          git pull origin dev
-          MERGE_COMMIT=$(git log --merges -n 1 --pretty=format:"%H")
-          if [ -n "$MERGE_COMMIT" ]; then
-            MERGE_MSG=$(git log -1 --pretty=format:"%s" $MERGE_COMMIT)
-            echo "Last merge commit message: $MERGE_MSG"
-            if [[ $MERGE_MSG =~ Merge\ pull\ request\ #([0-9]+)\ from\ ([^/]+)/(.+) ]]; then
-              PR_NUMBER=${BASH_REMATCH[1]}
-              SOURCE_BRANCH=${BASH_REMATCH[3]}
-              echo "Merged from PR #$PR_NUMBER, source branch: $SOURCE_BRANCH"
-              echo "MERGE_SOURCE_BRANCH=$SOURCE_BRANCH" >> $GITHUB_ENV
-            else
-              echo "Couldn't extract PR number and branch from merge commit message"
-            fi
-          else
-            echo "No merge commits found in recent history"
-          fi
-
-
-#####################Expirement######################################################
       - name: Get Prerelease Version
         run: |
           git fetch origin --tags
