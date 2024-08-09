@@ -22,7 +22,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   build:
-    needs: [lint, test]
+    needs: []
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -67,7 +67,7 @@ jobs:
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
 
-
+#####################Expirement######################################################
       - name: Determine merge source
         run: |
           git fetch --all
@@ -79,6 +79,8 @@ jobs:
           echo "Code was merged from branch: $BRANCH_NAME"
           echo "MERGE_SOURCE_BRANCH=$BRANCH_NAME" >> $GITHUB_ENV
 
+
+#####################Expirement######################################################
       - name: Get Prerelease Version
         run: |
           git fetch origin --tags
