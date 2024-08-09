@@ -49,7 +49,7 @@ jobs:
         run: |
           if [ "$INPUT_BASE_VERSION" = "$BETA_TAG_BASE_VERSION" ]; then
             # Increment beta.x to x+1
-            NEW_BETA_TAG=$(echo $LATEST_BETA_TAG | awk -F'.' '{$NF++; OFS="."; print $0}')
+            NEW_BETA_TAG=$(echo $LATEST_BETA_TAG | awk -F'[.-]' '{OFS=FS; $NF++; print $0}')
           else
             # Append -beta.0 to INPUT_BASE_VERSION
             NEW_BETA_TAG="${INPUT_BASE_VERSION}-beta.0"
@@ -57,7 +57,7 @@ jobs:
           echo "New beta tag: $NEW_BETA_TAG"
           echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
 
-          
+
 
       # - name: Store Beta Release Version as a Secret
       #   run: |
