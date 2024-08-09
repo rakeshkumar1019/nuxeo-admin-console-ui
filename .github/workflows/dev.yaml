@@ -14,8 +14,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  if_merged:
-    if: github.event.pull_request.merged == true
   lint:
     uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@dev
     secrets:
@@ -29,7 +27,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   Merged:
-    if_merged:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
