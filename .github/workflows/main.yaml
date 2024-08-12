@@ -84,7 +84,6 @@ jobs:
 # Run only on push to main branch without PR
   build:
     needs: [get-branch-name]
-    if: ${{ (github.event_name != 'push' || github.ref != 'refs/heads/main') || needs.hotfix-merge.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
