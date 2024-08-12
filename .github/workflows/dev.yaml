@@ -37,7 +37,8 @@ jobs:
       - name: Get the branch name of the last merged PR
         run: |
           last_pr_merge_commit=$(git log --merges --pretty=format:"%H" -n 1)
-          last_pr_branch=$(git log -1 --pretty=%b $last_pr_merge_commit | grep -oP '(?<=Merge pull request #\d+ from )[^\s]+')
+          merge_message=$(git log -1 --pretty=%B $last_pr_merge_commit)
+          last_pr_branch=$(echo "$merge_message" | grep -oP 'from \K[^ ]+')
           echo "The branch name is $last_pr_branch"
 
       - name: Setup Node.js
