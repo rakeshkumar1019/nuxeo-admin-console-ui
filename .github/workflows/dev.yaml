@@ -30,6 +30,10 @@ jobs:
 
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
 
+      - name: Get the branch name of the last merged PR
+        if: github.event.pull_request.merged == true
+        run: echo "The branch name is ${{ github.event.pull_request.head.ref }}"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
