@@ -3,12 +3,7 @@ name: Main
 on:
   push:
     branches:
-      - main
-  pull_request_target:
-    types:
-      - closed
-    branches:
-      - main
+      - main  
 
   # Manually trigger the workflow
   workflow_dispatch:
@@ -32,9 +27,10 @@ jobs:
         run: |
           last_pr_merge_commit=$(git log --merges --pretty=format:"%H" -n 1)
           merge_message=$(git log -1 --pretty=%B $last_pr_merge_commit)
-          last_pr_branch=$(echo "$merge_message" | grep -oP 'from \K[^/]+/[^\s]+$')
-          echo "The branch name is $last_pr_branch"
-          echo "::set-output name=last_pr_branch::$last_pr_branch"
+          full_branch_name=$(echo "$merge_message" | grep -oP 'from \K[^/]+/[^\s]+$')
+          branch_name=$(echo "$full_branch_name" | awk -F'/' '{print $2}')
+          echo "The branch name is $branch_name & full name is $full_branch_name"
+          echo "::set-output name=last_pr_branch::$branch_name"
 
   lint:
     uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@main
@@ -87,8 +83,7 @@ jobs:
           gh pr create --base dev --head main --title "HF: Merge main into dev" --body "### This pull request merges the latest changes from the **main** branch into the **dev** branch."
 # Run only on push to main branch without PR
   build:
-    needs: [get-branch-name, hotfix-merge]
-    if: ${{ (github.event_name != 'push' || github.ref != 'refs/heads/main') || needs.hotfix-merge.result == 'success' }}
+    needs: [get-branch-name]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
