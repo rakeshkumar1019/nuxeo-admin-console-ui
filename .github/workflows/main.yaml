@@ -30,7 +30,7 @@ jobs:
           full_branch_name=$(echo "$merge_message" | grep -oP 'from \K[^/]+/[^\s]+$')
           branch_name=$(echo "$full_branch_name" | awk -F'/' '{print $2}')
           echo "The branch name is $branch_name & full name is $full_branch_name"
-          echo "::set-output name=last_pr_branch::$branch_name"
+          echo "::set-output name=last_pr_branch::$(echo $branch_name | xargs)"
 
   lint:
     uses: nuxeo/nuxeo-admin-console-ui/.github/workflows/lint.yaml@main
@@ -45,6 +45,7 @@ jobs:
       GIT_TOKEN: ${{ secrets.GIT_TOKEN }} 
 
   hotfix-merge:
+    needs: [get-branch-name]
     if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
     runs-on: ubuntu-latest
     steps:
@@ -57,6 +58,10 @@ jobs:
         run: |
           echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
       
+      - name: Debug Output
+        run: |
+            echo "Branch name: ${{ needs.get-branch-name.outputs.last_pr_branch }}"
+
       - name: Get latest beta tag
         run: |
           git fetch  origin --tags
