@@ -5,7 +5,7 @@ on:
     branches:
       - main  
 
-  # Manually trigger the workflow test
+  # Manually trigger the workflow
   workflow_dispatch:
 
 jobs:
