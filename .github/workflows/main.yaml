@@ -5,7 +5,7 @@ on:
     branches:
       - main  
 
-  # Manually trigger the workflow
+  # Manually trigger the workflow test
   workflow_dispatch:
 
 jobs:
@@ -87,7 +87,7 @@ jobs:
         run: |
           gh pr create --base dev --head main --title "HF: Merge main into dev" --body "### This pull request merges the latest changes from the **main** branch into the **dev** branch."
   build:
-    needs: [get-branch-name]
+    needs: [get-branch-name,lint,test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
