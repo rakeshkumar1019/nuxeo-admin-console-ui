@@ -6,10 +6,6 @@ on:
       version:
         description: 'Version to promote (e.g.: 23.0.1-beta.0)'
         required: true
-      # referenceBranch:
-      #   description: 'Branch to be updated after the promotion'
-      #   required: true
-      #   default: 'dev'
       dryRun:
         description: 'Run the workflow without pushing code or publishing artifacts'
         type: boolean
