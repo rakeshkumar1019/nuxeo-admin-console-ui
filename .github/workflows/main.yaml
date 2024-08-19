@@ -5,7 +5,7 @@ on:
     branches:
       - main  
 
-  # Manually trigger the workflow
+  # Manually trigger the workflow HF
   workflow_dispatch:
 
 jobs:
@@ -46,6 +46,8 @@ jobs:
 
   hotfix-merge:
     needs: [get-branch-name]
+    outputs:
+      hotfix_beta_version: ${{ steps.get-hotfix-beta-version.outputs.hotfix_beta_version }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -86,9 +88,12 @@ jobs:
             echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
 
       - name: Store Beta Release Version as a Secret
+        id: get-hotfix-beta-version
         if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         run: |
-           gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
+          gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
+          echo "hotfix_beta_version=${{ env.NEW_BETA_TAG }}" >> $GITHUB_ENV
+          echo "::set-output name=hotfix_beta_version::${{ env.NEW_BETA_TAG }}"
 
       - name: Create Pull Request
         if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
@@ -139,10 +144,15 @@ jobs:
           echo $(npx -c 'echo "$npm_package_version"')
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
-          
+
       - name: Get Prerelease Version
         run: |
-          echo "VERSION=${{ secrets.BETA_RELEASE_VERSION }}" >> $GITHUB_ENV 
+          if [[ -n "${{ needs.hotfix-merge.outputs.hotfix_beta_version }}" ]]; then
+            echo "VERSION=${{ needs.hotfix-merge.outputs.hotfix_beta_version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ secrets.BETA_RELEASE_VERSION }}" >> $GITHUB_ENV
+          fi
+
 
           
       - name: Update Version ${{env.VERSION}}
