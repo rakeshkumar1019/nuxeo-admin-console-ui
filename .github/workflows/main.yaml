@@ -47,6 +47,8 @@ jobs:
   hotfix-merge:
     needs: [get-branch-name]
     if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+    outputs:
+      version: ${{ steps.set_version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -82,6 +84,7 @@ jobs:
       - name: Store Beta Release Version as a Secret
         run: |
            gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
+           echo "::set-output name=version::$VERSION"
 
       - name: Create Pull Request
         run: |
@@ -132,6 +135,13 @@ jobs:
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
 
+      - name: Use Version from Hotfix
+        run: |
+          VERSION=${{ needs.hotfix.outputs.version }}
+          echo "The version is $VERSION"
+          echo "Deploying version $VERSION to production..."
+
+          
       - name: Get Prerelease Version
         run: |
           echo "VERSION=${{ secrets.BETA_RELEASE_VERSION }}" >> $GITHUB_ENV 
