@@ -84,7 +84,7 @@ jobs:
       - name: Store Beta Release Version as a Secret
         run: |
            gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
-           echo "::set-output name=version::$VERSION"
+           echo "::set-output name=version::${{ env.NEW_BETA_TAG }}"
 
       - name: Create Pull Request
         run: |
