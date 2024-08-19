@@ -52,7 +52,9 @@ jobs:
         if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         uses: actions/checkout@v4
 
-      - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
+      - name: Setup Git config
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
+        run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
 
       - name: Authenticate GitHub CLI
         if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
