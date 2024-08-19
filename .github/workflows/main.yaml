@@ -5,7 +5,7 @@ on:
     branches:
       - main  
 
-  # Manually trigger the workflow 
+  # Manually trigger the workflow HF
   workflow_dispatch:
 
 jobs:
