@@ -47,7 +47,7 @@ jobs:
   hotfix-merge:
     needs: [get-branch-name]
     outputs:
-      hotfix_beta_vesrion: ${{ steps.get-hotfix-beta-version.outputs.hotfix_beta_vesrion }}
+      hotfix_beta_version: ${{ steps.get-hotfix-beta-version.outputs.hotfix_beta_version }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
