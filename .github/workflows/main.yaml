@@ -134,8 +134,14 @@ jobs:
 
       - name: Get Prerelease Version
         run: |
-          echo "VERSION=${{ secrets.BETA_RELEASE_VERSION }}" >> $GITHUB_ENV
+          echo "VERSION=${{ secrets.BETA_RELEASE_VERSION }}" >> $GITHUB_ENV 
 
+      - name: Print Unmasked Version
+        run: |
+          echo "Unmasking VERSION"
+          echo "${{ secrets.BETA_RELEASE_VERSION }}" | tee unmasked_version.txt
+          cat unmasked_version.txt
+          
       - name: Update Version ${{env.VERSION}}
         run: |
           # find . -type f -not -path "./node_modules/*" -regex ".*\.\(yaml\|sample\|json\)" -exec sed -i 's/'"${{env.PACKAGE_VERSION}}"'/'"${{env.VERSION}}"'/g' {} \;
