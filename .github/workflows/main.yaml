@@ -46,25 +46,26 @@ jobs:
 
   hotfix-merge:
     needs: [get-branch-name]
-    if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
-    outputs:
-      version: ${{ steps.set_version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         uses: actions/checkout@v4
 
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
 
       - name: Authenticate GitHub CLI
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         run: |
           echo "${{ secrets.GIT_TOKEN }}" | gh auth login --with-token 
       
       - name: Debug Output
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         run: |
             echo "Branch name: ${{ needs.get-branch-name.outputs.last_pr_branch }}"
 
       - name: Get latest beta tag
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         run: |
           git fetch  origin --tags
           latest_beta_tag=$(git for-each-ref --sort=-taggerdate --format '%(refname:short)' refs/tags | grep -E '^v23\.[0-9]+\.[0-9]+-beta\.[0-9]+$' | head -n 1 | sed 's/^v//')
@@ -72,6 +73,7 @@ jobs:
           echo "LATEST_BETA_TAG=$latest_beta_tag" >> $GITHUB_ENV
 
       - name: Update beta version
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         run: |
             # Increment beta.x to x+1 while preserving the correct format
             BASE_VERSION=$(echo $LATEST_BETA_TAG | sed 's/-beta.*//')
@@ -82,15 +84,16 @@ jobs:
             echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
 
       - name: Store Beta Release Version as a Secret
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         run: |
            gh secret set BETA_RELEASE_VERSION --body ${{ env.NEW_BETA_TAG }}
-           echo "::set-output name=version::${{ env.NEW_BETA_TAG }}"
 
       - name: Create Pull Request
+        if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
         run: |
           gh pr create --base dev --head main --title "HF: Merge main into dev" --body "### This pull request merges the latest changes from the **main** branch into the **dev** branch."
   build:
-    needs: [get-branch-name,lint,test]
+    needs: [get-branch-name,lint,test,hotfix-merge]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -134,23 +137,11 @@ jobs:
           echo $(npx -c 'echo "$npm_package_version"')
           echo "PACKAGE_VERSION=$(npx -c 'echo "$npm_package_version"')" >> $GITHUB_ENV 
           popd
-
-      - name: Use Version from Hotfix
-        run: |
-          VERSION=${{ needs.hotfix.outputs.version }}
-          echo "The version is $VERSION"
-          echo "Deploying version $VERSION to production..."
-
           
       - name: Get Prerelease Version
         run: |
           echo "VERSION=${{ secrets.BETA_RELEASE_VERSION }}" >> $GITHUB_ENV 
 
-      - name: Print Unmasked Version
-        run: |
-          echo "Unmasking VERSION"
-          echo "${{ secrets.BETA_RELEASE_VERSION }}" | tee unmasked_version.txt
-          cat unmasked_version.txt
           
       - name: Update Version ${{env.VERSION}}
         run: |
