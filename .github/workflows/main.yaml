@@ -9,6 +9,36 @@ on:
   workflow_dispatch:
 
 jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Render Markdown
+        run: |
+          MARKDOWN_CONTENT="
+          $(cat << EOF
+          # Nuxeo Admin Console UI Workflow
+
+          This GitHub Actions workflow is designed to automate the build and deployment process for the Nuxeo Admin Console UI project.
+
+          ## Workflow Steps:
+
+          1. **Get Branch Name**: The workflow starts by checking out the code and retrieving the name of the last merged pull request branch using the GitHub CLI.
+
+          2. **Lint and Test**: The workflow then runs two separate jobs to lint the code and run unit tests, using shared workflows defined in the `nuxeo/nuxeo-admin-console-ui` repository.
+
+          3. **Hotfix Merge**: If the last merged pull request was not from the `dev` branch, the workflow proceeds to the `hotfix-merge` job. This job checks out the code, sets up the Git configuration, and then gets the latest beta tag. It then increments the beta version number, stores the new beta version as a GitHub secret, and creates a pull request to merge the `main` branch into the `dev` branch.
+
+          4. **Build**: The `build` job is the main part of the workflow. It starts by checking out the code, setting up the Node.js and Java environments, and configuring the Maven settings. It then prepares the environment by setting the branch name and package version, and determines the prerelease version to use based on the output from the `hotfix-merge` job.
+            - The workflow updates the version in the project files, installs dependencies, and builds the Angular project using Maven.
+            - It then archives the built package as an artifact, deletes and updates the `.npmrc` file, and tags the repository with the new version.
+            - Finally, it publishes the package to the Nuxeo pre-production Marketplace.
+
+          Overall, this workflow is designed to automate the build and deployment process for the Nuxeo Admin Console UI project, ensuring that the latest changes are properly tested, versioned, and deployed to the pre-production environment.
+          EOF
+          )"
+
+          echo "$MARKDOWN_CONTENT" | gh markdown --render-data json | jq -r '.html'
+
   get-branch-name:
     runs-on: ubuntu-latest
     outputs:
@@ -87,6 +117,7 @@ jobs:
             echo "New beta tag: $NEW_BETA_TAG"
             echo "NEW_BETA_TAG=$NEW_BETA_TAG" >> $GITHUB_ENV
 
+# Using set-output to ensure we have the latest value for hotfix_beta_version.
       - name: Store Beta Release Version as a Secret
         id: get-hotfix-beta-version
         if: needs.get-branch-name.outputs.last_pr_branch != 'dev'
@@ -147,6 +178,8 @@ jobs:
 
       - name: Get Prerelease Version
         run: |
+          echo "Beta Release Version"
+          echo ${{secrets.BETA_RELEASE_VERSION}} | sed 's/./& /g'
           if [[ -n "${{ needs.hotfix-merge.outputs.hotfix_beta_version }}" ]]; then
             echo "VERSION=${{ needs.hotfix-merge.outputs.hotfix_beta_version }}" >> $GITHUB_ENV
           else
