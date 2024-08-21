@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
             ref: main
-            
+
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
 
       - name: Authenticate GitHub CLI
@@ -23,7 +23,7 @@ jobs:
       - name: Update BETA_RELEASE_VERSION secret
         run: |
           NEW_BETA_TAG="v1.2.3-beta"
-          gh secret set TEST_TAG--body $NEW_BETA_TAG
+          gh secret set TEST_TAG --body $NEW_BETA_TAG
 
   build:
     runs-on: ubuntu-latest
