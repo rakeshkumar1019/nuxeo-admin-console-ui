@@ -32,6 +32,7 @@ jobs:
               echo "The branch name is $branch_name & full name is $full_branch_name"
               echo "::set-output name=last_pr_branch::$(echo $branch_name | xargs)"
     hotfix-merge:
+        needs: get-branch-name
         runs-on: ubuntu-latest
         steps:
         - name: Checkout Code
