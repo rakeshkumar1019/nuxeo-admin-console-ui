@@ -38,6 +38,7 @@ jobs:
           )"
 
           echo "$MARKDOWN_CONTENT" | gh markdown --render-data json | jq -r '.html'
+          echo "$MARKDOWN_CONTENT" >> $GITHUB_STEP_SUMMARY
 
   get-branch-name:
     runs-on: ubuntu-latest
