@@ -1,9 +1,10 @@
 name: Main
 
 on:
-  push:
-    branches:
-      - main  
+  workflow_run:
+    workflows: ["Hotfix"]  # Name of the hotfix workflow
+    types:
+      - completed
 
   # Manually trigger the workflow 
   workflow_dispatch:
