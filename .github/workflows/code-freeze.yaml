@@ -64,9 +64,20 @@ jobs:
         
 
       - name: Create Pull Request
+        id: create-pr
         run: |
           rc_version="${{ github.event.inputs.rc }}"
-          gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with Release Candidate v${rc_version}" --body "### This pull request merges the latest changes from the **dev** branch into the **main** branch.
+          pr_url=$(gh pr create --base main --head dev --title "Code Freeze: Merge dev into main with Release Candidate v${rc_version}" --body "### This pull request merges the latest changes from the **dev** branch into the **main** branch.
           It includes updates in preparation for the upcoming release.
           **Release Candidate:** [v${rc_version}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${rc_version}).
-          **Create Beta Release:** [v${{ env.NEW_BETA_TAG }}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG }})."
+          **Create Beta Release:** [v${{ env.NEW_BETA_TAG }}](https://github.com/rakeshkumar1019/nuxeo-admin-console-ui/releases/tag/v${{ env.NEW_BETA_TAG }}).")
+          echo "PR_URL=$pr_url" >> $GITHUB_ENV
+          echo "RC_VERSION=$rc_version" >> $GITHUB_ENV
+          echo "BETA_VERSION=${{ env.NEW_BETA_TAG }}" >> $GITHUB_ENV
+   
+      - name: Output PR URL, RC Version, and Beta Version in Markdown Summary
+        run: |
+          echo "## Pull Request Created" >> $GITHUB_STEP_SUMMARY
+          echo "- **PR URL:** [$PR_URL]($PR_URL)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release Candidate Version:** v$RC_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Beta Version:** v$BETA_VERSION" >> $GITHUB_STEP_SUMMARY
