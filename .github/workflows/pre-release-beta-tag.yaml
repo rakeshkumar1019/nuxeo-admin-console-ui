@@ -1,4 +1,4 @@
-name: Code Freeze
+name: Get Latest Beta Tag
 on:
   workflow_dispatch:
 
