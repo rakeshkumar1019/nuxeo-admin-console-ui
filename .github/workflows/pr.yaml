@@ -9,6 +9,11 @@ jobs:
   hotfix:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+            ref: main
+            
       - run: git config user.name "rakeshkumar1019" && git config user.email "srakeshkumar1019@gmail.com"
 
       - name: Authenticate GitHub CLI
