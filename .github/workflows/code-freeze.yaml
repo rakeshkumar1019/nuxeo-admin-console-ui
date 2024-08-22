@@ -77,7 +77,19 @@ jobs:
    
       - name: Output PR URL, RC Version, and Beta Version in Markdown Summary
         run: |
-          echo "## Pull Request Created" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚀 Nuxeo Admin Console Code Freeze Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### Pull Request Created" >> $GITHUB_STEP_SUMMARY
           echo "- **PR URL:** [$PR_URL]($PR_URL)" >> $GITHUB_STEP_SUMMARY
+          echo "A pull request has been created from the **dev** branch to merge into **main**." >> $GITHUB_STEP_SUMMARY
+          echo "Kindly review the PR and merge the code for pre-release." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### Release Details" >> $GITHUB_STEP_SUMMARY
           echo "- **Release Candidate Version:** v$RC_VERSION" >> $GITHUB_STEP_SUMMARY
           echo "- **Beta Version:** v$BETA_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "Please proceed with the review and merge to complete the Nuxeo Admin Console pre-release." >> $GITHUB_STEP_SUMMARY
+        
