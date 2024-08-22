@@ -193,6 +193,7 @@ jobs:
           echo "[Nuxeo Admin Console Test Package on Marketplace](https://nos-preprod-connect.nuxeocloud.com/nuxeo/site/marketplace/package/nuxeo-admin-console-test)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "### Note" >> $GITHUB_STEP_SUMMARY
           echo "The release process is completed. Please wait for the new snapshot to be generated." >> $GITHUB_STEP_SUMMARY
           echo "New snapshot: **${{ env.NEW_VERSION }}-SNAPSHOT**" >> $GITHUB_STEP_SUMMARY
           echo "If there are any hotfix changes in the **main** branch, merge those changes into the **dev** branch once the new snapshot is generated." >> $GITHUB_STEP_SUMMARY
