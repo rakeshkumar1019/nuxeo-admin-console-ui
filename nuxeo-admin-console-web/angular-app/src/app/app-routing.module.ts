@@ -9,7 +9,7 @@ export const appRoutes: Route[] = [
     path: "",
     title: routeTitle.home,
     loadChildren: () =>
-      import("./features/home/home.module").then((m) => ),
+      import("./features/home/Home.module").then((m) => ),
   },
   {
     path: "elasticsearch-reindex",
@@ -27,7 +27,7 @@ export const appRoutes: Route[] = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(x)],
+  imports: [RouterModule.forRoot(Route)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
