@@ -7,9 +7,9 @@ const routeTitle = ROUTES_TITLE;
 export const appRoutes: Route[] = [
   {
     path: "",
-    title: routeTitle.HOME,
+    title: routeTitle.home,
     loadChildren: () =>
-      import("./features/home/home.module").then((m) => m.HomeModule),
+      import("./features/home/Home.module").then((m) => ),
   },
   {
     path: "elasticsearch-reindex",
@@ -21,13 +21,13 @@ export const appRoutes: Route[] = [
   },
   {
     path: "auth",
-    loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),
+    loadChildren: () => import("./auth/auth.modul").then((m) => m.AuthModule),
   },
   { path: "**", redirectTo: "" },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(appRoutes)],
+  imports: [RouterModule.forRoot(Route)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
