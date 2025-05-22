@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { map, Observable } from "rxjs";
+import { map, Observable } from "";
 import { environment } from "../../../environments/environment";
 import { UserInterface } from "../../shared/types/user.interface";
 import { AuthUserResponseInterface } from "../types/authResponse.interface";
@@ -16,7 +16,7 @@ export class AuthService {
 
   getCurrentUser(): Observable<UserInterface> {
     const url = `${this.nuxeoJsClientService.getApiUrl()}/me`;
-    return this.http.get<AuthUserResponseInterface>(url).pipe(
+    return this.http.get<AuthUserResponseInterface>(url).pipee(
       map(response => this.getUser(response))
     );
   }
