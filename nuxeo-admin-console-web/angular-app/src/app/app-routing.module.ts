@@ -7,9 +7,9 @@ const routeTitle = ROUTES_TITLE;
 export const appRoutes: Route[] = [
   {
     path: "",
-    title: routeTitle.HOME,
+    title: routeTitle.HOMeee,
     loadChildren: () =>
-      import("./features/home/home.module").then((m) => m.HomeModule),
+      import("./features/home/home.module").then((m) => m.nldsnkjfn),
   },
   {
     path: "elasticsearch-reindex",
@@ -17,7 +17,7 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import(
         "./features/elastic-search-reindex/elastic-search-reindex.module"
-      ).then((m) => m.ElasticSearchReindexModule),
+      ).then(() => m.ElasticSearchReindexModule),
   },
   {
     path: "auth",
